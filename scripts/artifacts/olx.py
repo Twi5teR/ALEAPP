@@ -36,7 +36,7 @@ def get_olx_selling(files_found, report_folder, seeker, wrap_text, time_offset):
     cursor = db.cursor()
     # cursor.execute(f"ATTACH DATABASE '{attachdb}' as ChatSellingDb-wal;")
     cursor.execute('''
-        select
+    SELECT
     datetime(timestamp, 'unixepoch') AS created_time,
     id,
     json_extract(ad, '$.id') as ad_id,  
@@ -52,7 +52,7 @@ def get_olx_selling(files_found, report_folder, seeker, wrap_text, time_offset):
     json_extract(messages, '$[0].created_at') AS message_created_at,  
     json_extract(messages, '$[0].text') AS message_text
         from ChatListItem
-        where id = respondent_id and json_valid(content) = 1 order by created_time
+        where id = respondent_id and json_valid(messages) = 1 order by created_time
         ''')
 
     all_rows = cursor.fetchall()
@@ -85,6 +85,6 @@ def get_olx_selling(files_found, report_folder, seeker, wrap_text, time_offset):
 __artifacts__ = {
     "OLX": (
         "OLX",
-        ('*_im.db*', '*db_im_xx*'),
+        ('ChatSellingDb.db'),
         get_olx_selling)
 }
