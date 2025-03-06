@@ -21,46 +21,31 @@ from scripts.ilapfuncs import logfunc, tsv, timeline, open_sqlite_db_readonly, d
 
 
 def get_olx_selling(files_found, report_folder, seeker, wrap_text, time_offset):
-    data_list = []
     # data_list1 = []
-
-    for file_found in files_found:
-        file_found = str(file_found)
-
-        if file_found.endswith(('-wal', '-shm', '-journal')):
-            continue
-        if file_found.endswith('ChatSellingDb.db'):
-            db = open_sqlite_db_readonly(file_found)
-    #   if file_found.endswith('ChatSellingDb.db-wal'):
-    #      attachdb = file_found
+    logfunc("Processing data for OLX Selling")
+    files_found = [x for x in files_found if not x.endswith('wal') and not x.endswith('shm')]
+    file_found = str(files_found[0])
+    db = open_sqlite_db_readonly(file_found)
     cursor = db.cursor()
-    # cursor.execute(f"ATTACH DATABASE '{attachdb}' as ChatSellingDb-wal;")
     cursor.execute('''
     SELECT
-    datetime(timestamp, 'unixepoch') AS created_time,
-    id,
-    json_extract(ad, '$.id') as ad_id,  
-    json_extract(ad, '$.title') as ad_title,  
-    json_extract(ad, '$.category.type') as ad_category,  
-    json_extract(ad, '$.active') as ad_active,  
-    json_extract(respondent, '$.id') AS respondent_id,  
-    json_extract(respondent, '$.name') AS respondent_name,  
-    json_extract(respondent, '$.type') AS respondent_type,  
-    json_extract(respondent, '$.blocked') AS respondent_blocked,  
-    json_extract(messages, '$[0].id') AS message_id,  
-    json_extract(messages, '$[0].user_id') AS message_user_id,  
-    json_extract(messages, '$[0].created_at') AS message_created_at,  
-    json_extract(messages, '$[0].text') AS message_text
+    datetime(`timestamp`, 'unixepoch') AS created_time,
+    `id`,
+    `ad`,
+    `respondent`,
+    `messages`
         from ChatListItem
-        where id = respondent_id and json_valid(messages) = 1 order by created_time
+      /* where id = respondent_id and json_valid(respondent) = 1 order by created_time /*
         ''')
 
     all_rows = cursor.fetchall()
+    usageentries = len(all_rows)
+    data_list = []
 
-    if len(all_rows) > 0:
+    if usageentries > 0:
+        logfunc(f"Found OLX {usageentries} Entries")
         for row in all_rows:
-            data_list.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10],
-                              row[11], row[12], row[13]))
+            data_list.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13]))
 
         report = ArtifactHtmlReport('OLX Selling')
         report.start_artifact_report(report_folder, 'OLX - Selling')
