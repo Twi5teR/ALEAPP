@@ -38,7 +38,10 @@ def get_olx_selling(files_found, report_folder, seeker, wrap_text, time_offset):
     json_extract(ad, '$.id') as ad_id,  
     json_extract(ad, '$.title') as ad_title,  
     json_extract(ad, '$.category.type') as ad_category,  
-    json_extract(ad, '$.active') as ad_active,  
+    case json_extract(ad, '$.active') 
+    when 0 then 'No'
+    when 1 then 'Yes'
+    end as "Ad Active",
     json_extract(respondent, '$.id') AS respondent_id,  
     json_extract(respondent, '$.name') AS respondent_name,  
     json_extract(respondent, '$.type') AS respondent_type,  
@@ -68,8 +71,9 @@ def get_olx_selling(files_found, report_folder, seeker, wrap_text, time_offset):
         report = ArtifactHtmlReport('OLX Selling')
         report.start_artifact_report(report_folder, 'Selling Events')
         report.add_script()
-        data_headers = ('Timestamp (UTC)', 'ID', 'Ad ID', 'Ad Title', 'Ad Category', 'Ad Active', 'Respondent ID', 'Respondent Name',
-            'Respondent Type', 'Blocked', 'Message ID', 'Message UID', 'Message Created At', 'Message Text')
+        data_headers = (
+        'Timestamp (UTC)', 'ID', 'Ad ID', 'Ad Title', 'Ad Category', 'Ad Active', 'Respondent ID', 'Respondent Name',
+        'Respondent Type', 'Blocked', 'Message ID', 'Message UID', 'Message Created At', 'Message Text')
 
         report.write_artifact_data_table(data_headers, data_list, file_found)
         report.end_artifact_report()
