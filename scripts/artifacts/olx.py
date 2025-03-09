@@ -35,21 +35,21 @@ def get_olx_selling(files_found, report_folder, seeker, wrap_text, time_offset):
             SELECT 
     datetime(ChatListItem.timestamp,'unixepoch'),
     id,
-    json_extract(ad, '$.id') as ad_id,  
-    json_extract(ad, '$.title') as ad_title,  
-    json_extract(ad, '$.category.type') as ad_category,  
+    json_extract(ad, '$.id'),  
+    json_extract(ad, '$.title'),  
+    json_extract(ad, '$.category.type'),  
     case json_extract(ad, '$.active') 
     when 0 then 'No'
     when 1 then 'Yes'
     end as "Ad Active",
-    json_extract(respondent, '$.id') AS respondent_id,  
-    json_extract(respondent, '$.name') AS respondent_name,  
-    json_extract(respondent, '$.type') AS respondent_type,  
-    json_extract(respondent, '$.blocked') AS respondent_blocked,  
-    json_extract(messages, '$[0].id') AS message_id,  
-    json_extract(messages, '$[0].user_id') AS message_user_id,  
-    json_extract(messages, '$[0].created_at') AS message_created_at,  
-    json_extract(messages, '$[0].text') AS message_text
+    json_extract(respondent, '$.id'),  
+    json_extract(respondent, '$.name'),  
+    json_extract(respondent, '$.type'),  
+    json_extract(respondent, '$.blocked'),  
+    json_extract(messages, '$[0].id'),  
+    json_extract(messages, '$[0].user_id'),  
+    json_extract(messages, '$[0].created_at'),  
+    json_extract(messages, '$[0].text')
             FROM ChatListItem
             ''')
             logfunc("SQL query executed successfully")
