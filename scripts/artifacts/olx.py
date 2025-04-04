@@ -34,23 +34,24 @@ def get_olx_selling(files_found, report_folder, seeker, wrap_text, time_offset):
             cursor.execute('''
                     SELECT 
             datetime(ChatListItem.timestamp,'unixepoch'),
-            id,
-            json_extract(ad, '$.id'),  
-            json_extract(ad, '$.title'),  
-            json_extract(ad, '$.category.type'),  
-            case json_extract(ad, '$.active') 
+            ChatListItem.id,
+            json_extract(ChatListItem.ad, '$.id'),  
+            json_extract(ChatListItem.ad, '$.title'),  
+            json_extract(ChatListItem.ad, '$.category.type'),  
+            case json_extract(ChatListItem.ad, '$.active') 
             when 0 then 'No'
             when 1 then 'Yes'
             end as "Ad Active",
-            json_extract(respondent, '$.id'),  
-            json_extract(respondent, '$.name'),  
-            json_extract(respondent, '$.type'),  
-            json_extract(respondent, '$.blocked'),  
-            json_extract(messages, '$[0].id'),  
-            json_extract(messages, '$[0].user_id'),  
-            json_extract(messages, '$[0].created_at'),  
-            json_extract(messages, '$[0].text')
-                    FROM ChatListItem
+            json_extract(ChatListItem.respondent, '$.id'),  
+            json_extract(ChatListItem.respondent, '$.name'),  
+            json_extract(ChatListItem.respondent, '$.type'),  
+            json_extract(ChatListItem.respondent, '$.blocked'),  
+            json_extract(messages.value, '$.id'),  
+            json_extract(messages.value, '$.user_id'),  
+            json_extract(messages.value, '$.created_at'),  
+            json_extract(messages.value, '$.text')
+                    FROM ChatListItem,
+            json_each(ChatListItem.messages) AS messages;
                     ''')
             logfunc("SQL query executed successfully")
             all_rows = cursor.fetchall()
@@ -74,23 +75,24 @@ def get_olx_selling(files_found, report_folder, seeker, wrap_text, time_offset):
             cursor.execute('''
             SELECT 
             datetime(ChatListItem.timestamp,'unixepoch'),
-            id,
-            json_extract(ad, '$.id'),  
-            json_extract(ad, '$.title'),  
-            json_extract(ad, '$.category.type'),  
-            case json_extract(ad, '$.active') 
+            ChatListItem.id,
+            json_extract(ChatListItem.ad, '$.id'),  
+            json_extract(ChatListItem.ad, '$.title'),  
+            json_extract(ChatListItem.ad, '$.category.type'),  
+            case json_extract(ChatListItem.ad, '$.active') 
             when 0 then 'No'
             when 1 then 'Yes'
             end as "Ad Active",
-            json_extract(respondent, '$.id'),  
-            json_extract(respondent, '$.name'),  
-            json_extract(respondent, '$.type'),  
-            json_extract(respondent, '$.blocked'),  
-            json_extract(messages, '$[0].id'),  
-            json_extract(messages, '$[0].user_id'),  
-            json_extract(messages, '$[0].created_at'),  
-            json_extract(messages, '$[0].text')
-                    FROM ChatListItem
+            json_extract(ChatListItem.respondent, '$.id'),  
+            json_extract(ChatListItem.respondent, '$.name'),  
+            json_extract(ChatListItem.respondent, '$.type'),  
+            json_extract(ChatListItem.respondent, '$.blocked'),  
+            json_extract(messages.value, '$.id'),  
+            json_extract(messages.value, '$.user_id'),  
+            json_extract(messages.value, '$.created_at'),  
+            json_extract(messages.value, '$.text')
+                    FROM ChatListItem,
+            json_each(ChatListItem.messages) AS messages;
                     ''')
             logfunc("SQL query executed successfully")
             all_rows = cursor.fetchall()
